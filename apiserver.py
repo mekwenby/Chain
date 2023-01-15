@@ -6,35 +6,60 @@ app = Flask(__name__)
 
 '''为app绑定chain'''
 app.chain = None
+app.apiversion = 'v1.1-920'
 
 
 @app.route('/')
 def hello_world():
-    """返回版本号"""
-    return jsonify(app.chain.version)
+    """返回信息"""
+
+    dic = {
+        'version': app.chain.version,
+        'apiversion': app.apiversion,
+        'len': app.chain.len(),
+    }
+
+    return jsonify(dic)
 
 
-@app.route('/add', methods=['POST'])
+@app.route('/add', methods=['POST', 'GET'])
 def add():
-    """添加到队列，POST请求,任意 key，v 只取 v """
+    """添加到队列,任意 key，v 只取 v """
     if request.method == 'POST':
-
-        '''for s in request.form.values():
-
-            if s is not None:
-                app.chain.add(s)'''
+        '''POST方式添加队列'''
         # 优化为批量添加
         app.chain.adds(request.form.values())
         return jsonify(app.chain.len())
 
+    elif request.method == 'GET':
+        '''GET方式添加队列'''
+        app.chain.adds(request.args.values())
+        return jsonify(app.chain.len())
+
     else:
-        return jsonify(0)
+        return jsonify('Fail!')
 
 
 @app.route('/get')
 def get():
     """从队列中获取一个值"""
     return jsonify(app.chain.get())
+
+
+@app.route('/delete', methods=['POST', 'GET'])
+def delete():
+    if request.method == 'POST':
+        '''POST方式删除'''
+        # 优化为批量添加
+
+        return jsonify(app.chain.deletes(request.form.values()))
+
+    elif request.method == 'GET':
+        '''GET方式删除'''
+        return jsonify(app.chain.deletes(request.args.values()))
+
+    else:
+        return jsonify('Fail!')
 
 
 @app.route('/len')
@@ -45,7 +70,7 @@ def len():
 
 @app.route('/clear', methods=['POST'])
 def clear():
-    """清空队列，需要传一个密码"""
+    """清空队列，需要传Chain的passwd,keys为passwd"""
     if request.method == 'POST':
         passwd = request.form.get('passwd')
         if passwd == app.chain.passwd:

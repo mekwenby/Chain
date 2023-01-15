@@ -1,0 +1,10 @@
+memory:
+  filename: Chain.json
+  lasting: false
+memorymode: true
+redis:
+  host: 127.0.0.1
+  keys: queue
+  lasting: true
+  port: 6379
+redismode: false

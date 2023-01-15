@@ -7,12 +7,14 @@ if os.path.exists('chain.yaml'):
 else:
     pass
 
+'''恢复默认的yaml配置文件'''
+
 
 def yamlll():
     dic = {
         # 内存模式
         'memorymode': True,
-        'memory': {'lasting': False},
+        'memory': {'lasting': False, 'filename': 'Chain.json'},
 
         # redis模式
         'redismode': False,
@@ -21,6 +23,7 @@ def yamlll():
     }
     with open('chain.yaml', 'w') as f:
         yaml.safe_dump(dic, f)
+
 
 if __name__ == '__main__':
     yamlll()
